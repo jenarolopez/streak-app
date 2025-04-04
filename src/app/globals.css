@@ -102,13 +102,5 @@ body {
 }
 
 
-@layer base {
-  * {
-    @reference border-border;
-  }
-  body {
-    @reference bg-background text-foreground;
-  }
-}
 
 
