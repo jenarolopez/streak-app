@@ -20,29 +20,15 @@ export default function StreakDisplay({ caseNumber }: StreakDisplayProps) {
     const fetchStreakData = async () => {
       try {
         setLoading(true)
-        
-        setStreakData({
-          activitiesToday: 0,
-          total: 0,
-          days: [{
-            date: moment().format("YYYY-MM-DD"),
-            activities: 0,
-            state: "INCOMPLETE",
-          }, {
-            date: moment().subtract(1, "days").format("YYYY-MM-DD"),
-            activities: 0,
-            state: "INCOMPLETE",
-          }, {
-            date: moment().subtract(2, "days").format("YYYY-MM-DD"),
-            activities: 0,
-            state: "INCOMPLETE",
-          }, {
-            date: moment().subtract(3, "days").format("YYYY-MM-DD"),
-            activities: 0,
-            state: "INCOMPLETE",
-          }
-          ],
-        })
+        const response = await fetch(`/api/streaks/${caseNumber}`)
+       
+        if (!response.ok) {
+          throw new Error(`Failed to fetch streak data: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+        console.log("Fetched streak data:", data)
+        setStreakData(data)
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred")
         console.error("Error fetching streak data:", err)

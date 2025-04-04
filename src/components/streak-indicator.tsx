@@ -50,9 +50,10 @@ export default function StreakIndicator({ state, isToday }: StreakIndicatorProps
 
   const { bg, text, border } = getColors()
 
-  if(state === "INCOMPLETE" && isToday) {
+  if(state=== "INCOMPLETE" && isToday) {
     return (
-      <div className={`w-5 h-5 rounded-full flex items-center justify-center ${bg} ${text} ${border}`}>  
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${text} ${border}`}>  
+        <span className={`w-5 h-5 rounded-full ${bg}`}/>
       </div>
     )
   }
