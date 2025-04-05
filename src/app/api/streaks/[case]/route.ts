@@ -150,9 +150,8 @@ function calculateStreak(timeline: DayEntry[]): DayEntry[] {
 
   }, {});
 
-  const streakArr = Object.values(result).map((entry, index) => entry);
+  const streakArr = Object.values(result).map((entry) => entry);
   let streakIndex = [] as number[];
-  let consecutiveMisses = 0;
 
   streakArr.map((entry, index) => {
     if (entry.state === "AT_RISK" || entry.state === "SAVED") {
@@ -225,7 +224,7 @@ function build7DayTimeline(data: Omit<DayEntry, "state">[]): DayEntry[] {
     })).reverse() as DayEntry[];
 
 
-  const dataWithState = dataUntilToday.map((entry, index) => {
+  const dataWithState = dataUntilToday.map((entry) => {
 
 
     return {

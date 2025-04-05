@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { calculateStreakLength, getDayOfWeek } from "@/lib/streak-utils"
+import { getDayOfWeek } from "@/lib/streak-utils"
 import StreakIndicator from "./streak-indicator"
 import { StreakData } from "../types/streak"
 import moment from "moment"
@@ -56,7 +56,7 @@ export default function StreakDisplay({ caseNumber }: StreakDisplayProps) {
         <div className="grid grid-cols-7 gap-2">
           {streakData.days
             .slice()
-            .map((day, index) => {
+            .map((day) => {
               const dayOfWeek = getDayOfWeek(day.date)
               const isToday = moment(day.date).isSame(new Date(), "day")
 
