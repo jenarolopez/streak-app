@@ -48,11 +48,9 @@ export default function StreakDisplay({ caseNumber }: StreakDisplayProps) {
     return <div className="text-center py-10 text-red-500">Error: {error || "Failed to load streak data"}</div>
   }
 
-  const streakLength = calculateStreakLength(streakData)
-
   return (
     <div className="max-w-md mx-auto text-center">
-      <h1 className="text-4xl font-bold mb-8">Your streak is {streakLength} days</h1>
+      <h1 className="text-4xl font-bold mb-8">Your streak is {streakData.total} days</h1>
 
       <div className="bg-white rounded-xl p-6 shadow-md">
         <div className="grid grid-cols-7 gap-2">

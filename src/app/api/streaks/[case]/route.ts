@@ -72,19 +72,72 @@ function calculateStreak(timeline: DayEntry[]): DayEntry[] {
 
   let misses = 0;
   let index = 0
-  const result = timeline.reduce((acc:Record<string, DayEntry>, entry: DayEntry) => {
+  const result = timeline.reduce((acc: Record<string, DayEntry>, entry: DayEntry) => {
     index++;
-  
-    if(entry.activities === 0) {
-      misses++;
+
+    if (entry.activities === 0) {
+
+      const advanceTime = timeline.slice(index, index + 3)
+
+      if (advanceTime[0]?.activities >= 1) {
+        return {
+          ...acc,
+          [entry.date]: {
+            ...entry,
+            state: "SAVED" as DayState
+          }
+        }
+      }
+      else if (advanceTime[1]?.activities >= 2) {
+        return {
+          ...acc,
+          [entry.date]: {
+            ...entry,
+            state: "SAVED" as DayState
+          }
+        }
+      }
+      else if (advanceTime[0]?.activities === 1) {
+        misses++;
+        return {
+          ...acc,
+          [entry.date]: {
+            ...entry,
+            state: "AT_RISK" as DayState
+          }
+        }
+      } else if (advanceTime[1]?.activities <= 2) {
+        misses++;
+        return {
+          ...acc,
+          [entry.date]: {
+            ...entry,
+            state: "AT_RISK" as DayState
+          }
+        }
+      }
+      else {
+        misses++;
+        return {
+          ...acc,
+          [entry.date]: {
+            ...entry,
+            state: "INCOMPLETE" as DayState
+          }
+        }
+      }
+
+
+    }
+
+    if (misses >= entry.activities) {
       return {
         ...acc,
         [entry.date]: {
           ...entry,
-          state: "INCOMPLETE" as DayState,
+          state: "INCOMPLETE" as DayState
         }
       };
-
     }
 
     return {
@@ -97,7 +150,44 @@ function calculateStreak(timeline: DayEntry[]): DayEntry[] {
 
   }, {});
 
-  return Object.values(result).map((entry, index) => entry);
+  const streakArr = Object.values(result).map((entry, index) => entry);
+  let streakIndex = [] as number[];
+  let consecutiveMisses = 0;
+
+  streakArr.map((entry, index) => {
+    if (entry.state === "AT_RISK" || entry.state === "SAVED") {
+      streakIndex.push(index);
+    } 
+    return entry
+  })
+
+  const consecutive = getThreeConsecutive(streakIndex);
+
+  return streakArr.map((entry, index) => {
+    if (consecutive.includes(index)) {
+      return {
+        ...entry,
+        state: "INCOMPLETE" as DayState
+      }
+    }
+    return entry
+  })
+
+}
+
+function getThreeConsecutive(arr: number[]): number[] {
+ 
+
+  for (let i = 0; i < arr.length - 2; i++) {
+    if (
+      arr[i + 1] === arr[i] + 1 &&
+      arr[i + 2] === arr[i + 1] + 1
+    ) {
+      return [arr[i], arr[i + 1], arr[i + 2]];
+    }
+  }
+
+  return []; 
 }
 
 
@@ -184,9 +274,23 @@ export async function GET(
     const timeline = build7DayTimeline(days);
 
     // Create response
+
+    let streak = 0;
+
+
+
     const response: StreakResponse = {
-      activitiesToday: 1,
-      total: 1,
+      activitiesToday: timeline.find(entry => moment(entry.date).isSame(new Date(), "day"))?.activities || 0,
+      total: timeline.reduce((acc, entry) => {
+        if (entry.state === "COMPLETED" || entry.state === "SAVED" || entry.state === "AT_RISK") {
+          return acc += 1;
+        }
+        
+        if( entry.state === "INCOMPLETE" && !moment(entry.date).isSameOrAfter(new Date(), "day")) {
+          return 0
+        }
+        return acc;
+      }, 0),
       days: timeline,
     };
 
