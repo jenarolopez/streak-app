@@ -67,6 +67,40 @@ type DayEntry = {
   state?: DayState;
 };
 
+function calculateStreak(timeline: DayEntry[]): DayEntry[] {
+
+
+  let misses = 0;
+  let index = 0
+  const result = timeline.reduce((acc:Record<string, DayEntry>, entry: DayEntry) => {
+    index++;
+  
+    if(entry.activities === 0) {
+      misses++;
+      return {
+        ...acc,
+        [entry.date]: {
+          ...entry,
+          state: "INCOMPLETE" as DayState,
+        }
+      };
+
+    }
+
+    return {
+      ...acc,
+      [entry.date]: {
+        ...entry,
+        state: "COMPLETED" as DayState,
+      }
+    };
+
+  }, {});
+
+  return Object.values(result).map((entry, index) => entry);
+}
+
+
 function build7DayTimeline(data: Omit<DayEntry, "state">[]): DayEntry[] {
   if (!data.length) return [];
 
@@ -106,13 +140,13 @@ function build7DayTimeline(data: Omit<DayEntry, "state">[]): DayEntry[] {
 
     return {
       ...entry,
-      state: "INCOMPLETE",
+      state: "COMPLETED",
     }
   }).reverse() as DayEntry[];
 
 
 
-  return [...dataWithState.reverse(), ...remainingDays];
+  return [...calculateStreak([...dataWithState.reverse()]), ...remainingDays];
 }
 
 
