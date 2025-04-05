@@ -241,7 +241,7 @@ function build7DayTimeline(data: Omit<DayEntry, "state">[]): DayEntry[] {
 
 
 
-export function normalizeActivities(raw: RawActivity[]): ActivitySummary[] {
+function normalizeActivities(raw: RawActivity[]): ActivitySummary[] {
 
 
   const reduceActivities = raw.reduce((acc: Record<string, ActivitySummary>, activity) => {
@@ -274,10 +274,6 @@ export async function GET(
     const timeline = build7DayTimeline(days);
 
     // Create response
-
-    let streak = 0;
-
-
 
     const response: StreakResponse = {
       activitiesToday: timeline.find(entry => moment(entry.date).isSame(new Date(), "day"))?.activities || 0,
